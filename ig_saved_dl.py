@@ -119,23 +119,27 @@ if __name__ == '__main__':
     # populate media array
     saved_media = []
     feed_results = api.saved_feed()
-    print (feed_results)
-    saved_media.extend(feed_results.get('items', []))
-    next_max_id = feed_results.get('next_max_id')
-    
-    while next_max_id:
-        feed_results = api.saved_feed(max_id=next_max_id)
-        saved_media.extend(feed_results.get('items', []))
+    print ("Saved items to download: " +str(len(feed_results['items'])))
 
-    # process saved_media
-    for i in saved_media:
-        # remove saved photo
-        status = api.unsave_photo(i['media']['id'])
-        if i['media']['media_type'] == 8:
-            for m in i['media']['carousel_media']:
+    if len(feed_results['items']) > 0:
+        saved_media.extend(feed_results.get('items', []))
+        next_max_id = feed_results.get('next_max_id')
+    
+        while next_max_id:
+            feed_results = api.saved_feed(max_id=next_max_id)
+            saved_media.extend(feed_results.get('items', []))
+            next_max_id = feed_results.get('next_max_id')
+
+        # process saved_media
+        for i in saved_media:
+            # remove saved item 
+            status = api.unsave_photo(i['media']['id'])a
+            # if carousel_media - download each image
+            if i['media']['media_type'] == 8:
+                for m in i['media']['carousel_media']:
+                    print(i['media'])
+                    save_img_url(m['image_versions2']['candidates'][0]['url'], args.target_dir)
+            if i['media']['media_type'] == 1:
                 print(i['media'])
-                save_img_url(m['image_versions2']['candidates'][0]['url'], args.target_dir)
-        if i['media']['media_type'] == 1:
-            print(i['media'])
-            save_img_url(i['media']['image_versions2']['candidates'][0]['url'], args.target_dir)
+                save_img_url(i['media']['image_versions2']['candidates'][0]['url'], args.target_dir)
 
