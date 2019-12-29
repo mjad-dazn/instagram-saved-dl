@@ -3,3 +3,6 @@ prepare:
 
 test:
 	pylint *.py
+
+run:
+	./run_me.sh
